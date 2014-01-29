@@ -2,20 +2,17 @@ package testchado
 
 import (
     "archive/zip"
-    "database/sql"
+    "github.com/jmoiron/sqlx"
     "os"
     "path/filepath"
 )
 
 type DBManager interface {
-    DBHandle() *sql.DB
+    DBHandle() *sqlx.DB
     Database() string
     DropSchema() error
     CreateDatabase() error
     DropDatabase() error
-    GetClient() (string, error)
-    DeployByClient(string) error
-    DeployByDB() error
     DataSource() string
     DeploySchema() error
     ResetSchema() error
@@ -26,7 +23,7 @@ type DBHelper struct {
     Password  string
     Driver    string
     dbsource  string
-    dbhandler *sql.DB
+    dbhandler *sqlx.DB
 }
 
 func (dbh *DBHelper) SchemaDDL() (fpath string, err error) {
@@ -39,7 +36,7 @@ func (dbh *DBHelper) SchemaDDL() (fpath string, err error) {
     name := dbh.Driver + ".chado"
     for _, f := range zr.File {
         if f.Name == name {
-            fpath := filepath.Join(zpath, f.Name)
+            fpath = filepath.Join(zpath, f.Name)
             break
         }
     }
