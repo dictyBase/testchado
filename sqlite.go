@@ -6,11 +6,13 @@ import (
     "log"
 )
 
+// A type specific for sqlite backend
 type Sqlite struct {
     *DBHelper
 }
 
-func NewDBManager() *Sqlite {
+// Get a in memory instance of sqlite DBManager
+func NewSQLiteManager() *Sqlite {
     dbh, err := sqlx.Open("sqlite3", ":memory:")
     if err != nil {
         log.Fatal(err)
@@ -59,14 +61,6 @@ func (sqlite *Sqlite) DeploySchema() error {
     if err != nil {
         return err
     }
-    return nil
-}
-
-func (sqlite *Sqlite) DropDatabase() error {
-    return nil
-}
-
-func (sqlite *Sqlite) CreateDatabase() error {
     return nil
 }
 
