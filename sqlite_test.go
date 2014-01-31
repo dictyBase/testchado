@@ -1,8 +1,7 @@
 package testchado
 
 import (
-    "os"
-    "path/filepath"
+    "bytes"
     "testing"
 )
 
@@ -29,13 +28,56 @@ func TestSQLiteManager(t *testing.T) {
 
 func TestSQLiteSchemaPath(t *testing.T) {
     dbm := NewSQLiteManager()
-    fpath, err := dbm.SchemaDDL()
+    content, err := dbm.SchemaDDL()
 
     if err != nil {
-        t.Error("Should not throw any error")
+        t.Errorf("Should not throw any error: %s", err)
     }
-    expath := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "dictybase", "testchado", "chado."+dbm.Driver)
-    if fpath != expath {
-        t.Error("should have returned the correct schema file path")
+    if !bytes.Contains(content.Bytes(), []byte("feature")) {
+        t.Error("should have contain feature")
+    }
+}
+
+func TestSQLiteSchemaCRUD(t *testing.T) {
+    dbm := NewSQLiteManager()
+    if err := dbm.DeploySchema(); err != nil {
+        t.Errorf("error %s: should have deployed the chado schema", err)
+    }
+
+    sqlx := dbm.DBHandle()
+    type tbls struct{ Name string }
+    tbl := tbls{}
+    err := sqlx.Get(&tbl, "SELECT name FROM sqlite_master where type = ? and tbl_name = ?", "table", "feature")
+    if err != nil {
+        t.Errorf("should have executed the query %s", err)
+    }
+    if tbl.Name != "feature" {
+        t.Error("should have got feature table name")
+    }
+
+    type entries struct{ Counter int }
+    e := entries{}
+    err = sqlx.Get(&e, "SELECT count(name) counter FROM sqlite_master where type = ?", "table")
+    if err != nil {
+        t.Errorf("should have executed the query %s", err)
+    }
+    if e.Counter != 174 {
+        t.Error("should have 172 tables")
+    }
+
+    if err = dbm.DropSchema(); err != nil {
+        t.Errorf("should have dropped the schema: %s", err)
+    }
+    err = sqlx.Get(&e, "SELECT count(name) counter FROM sqlite_master where type = ?", "table")
+    if err != nil {
+        t.Errorf("should have executed the query %s", err)
+    }
+    if e.Counter != 0 {
+        t.Error("should have 0 tables")
+    }
+
+    _ = dbm.DeploySchema()
+    if err = dbm.ResetSchema(); err != nil {
+        t.Errorf("should have reset the schema: %s", err)
     }
 }
