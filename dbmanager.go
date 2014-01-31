@@ -2,7 +2,9 @@ package testchado
 
 import (
     "archive/zip"
+    "bytes"
     "github.com/jmoiron/sqlx"
+    "io"
     "os"
     "path/filepath"
 )
@@ -37,21 +39,29 @@ type DBHelper struct {
     dbhandler *sqlx.DB
 }
 
-// Give the full path to the chado schema for a particular backend
-func (dbh *DBHelper) SchemaDDL() (fpath string, err error) {
+// Return the content of chado schema for a particular backend
+func (dbh *DBHelper) SchemaDDL() (*bytes.Buffer, error) {
+    var c bytes.Buffer
     zpath := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "dictybase", "testchado")
     zfile := filepath.Join(zpath, "chado.zip")
     zr, err := zip.OpenReader(zfile)
     if err != nil {
-        return
+        return &c, err
     }
     defer zr.Close()
     name := "chado." + dbh.Driver
     for _, f := range zr.File {
         if f.Name == name {
-            fpath = filepath.Join(zpath, f.Name)
+            zc, err := f.Open()
+            if err != nil {
+                return &c, err
+            }
+            _, err = io.Copy(&c, zc)
+            if err != nil {
+                return &c, err
+            }
             break
         }
     }
-    return
+    return &c, nil
 }
