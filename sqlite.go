@@ -33,7 +33,7 @@ func (sqlite *Sqlite) DataSource() string {
 }
 
 func (sqlite *Sqlite) DropSchema() error {
-    dbh := sqlite.DBHelper.dbhandler
+    dbh := sqlite.DBHandle()
     type table struct{ Name string }
     tbls := []table{}
     err := dbh.Select(&tbls, "SELECT name FROM sqlite_master where type = ?", "table")
@@ -42,7 +42,8 @@ func (sqlite *Sqlite) DropSchema() error {
     }
     tx := dbh.MustBegin()
     for _, tbl := range tbls {
-        _ = tx.Execf("DROP table ?", tbl)
+        stmt := "DROP TABLE " + tbl.Name
+        _ = tx.Execf(stmt)
     }
     err = tx.Commit()
     if err != nil {
@@ -52,15 +53,12 @@ func (sqlite *Sqlite) DropSchema() error {
 }
 
 func (sqlite *Sqlite) DeploySchema() error {
-    dbh := sqlite.DBHelper.dbhandler
-    schema, err := sqlite.SchemaDDL()
+    dbh := sqlite.DBHandle()
+    content, err := sqlite.SchemaDDL()
     if err != nil {
         return err
     }
-    _, err = dbh.LoadFile(schema)
-    if err != nil {
-        return err
-    }
+    _ = dbh.Execf(content.String())
     return nil
 }
 
