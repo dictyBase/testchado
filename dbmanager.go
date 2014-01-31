@@ -40,12 +40,13 @@ type DBHelper struct {
 // Give the full path to the chado schema for a particular backend
 func (dbh *DBHelper) SchemaDDL() (fpath string, err error) {
     zpath := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "dictybase", "testchado")
-    zr, err := zip.OpenReader(zpath)
+    zfile := filepath.Join(zpath, "chado.zip")
+    zr, err := zip.OpenReader(zfile)
     if err != nil {
         return
     }
     defer zr.Close()
-    name := dbh.Driver + ".chado"
+    name := "chado." + dbh.Driver
     for _, f := range zr.File {
         if f.Name == name {
             fpath = filepath.Join(zpath, f.Name)
