@@ -81,3 +81,34 @@ func TestSQLiteSchemaCRUD(t *testing.T) {
         t.Errorf("should have reset the schema: %s", err)
     }
 }
+
+func TestLoadFixture(t *testing.T) {
+    dbm := NewSQLiteManager()
+    _ = dbm.DeploySchema()
+    if err := dbm.LoadFixture(); err != nil {
+        t.Errorf("should have loaded fixture: %s", err)
+    }
+
+    type entries struct{ Counter int }
+    e := entries{}
+    sqlx := dbm.DBHandle()
+    err := sqlx.Get(&e, "SELECT count(*) counter FROM organism")
+    if err != nil {
+        t.Errorf("should have executed the query %s", err)
+    }
+    if e.Counter != 12 {
+        t.Error("should have 12 organisms")
+    }
+
+    query := `
+     SELECT count(cvterm.cvterm_id) counter from CVTERM join CV on CV.CV_ID=CVTERM.CV_ID
+     WHERE CV.NAME = 'sequence'
+    `
+    err = sqlx.Get(&e, query)
+    if err != nil {
+        t.Errorf("should have executed the query %s", err)
+    }
+    if e.Counter != 286 {
+        t.Error("should have 286 sequence ontology term")
+    }
+}
