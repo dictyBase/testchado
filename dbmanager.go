@@ -65,3 +65,34 @@ func (dbh *DBHelper) SchemaDDL() (*bytes.Buffer, error) {
     }
     return &c, nil
 }
+
+// Loads the default fixture in the chado schema. The default fixture include.
+//  1.List of default organisms.
+//  2.Sequnence ontology(SO)
+//  3.Relation ontology(RO)
+func (dbh *DBHelper) LoadFixture() error {
+    var c bytes.Buffer
+    sqlx := dbh.dbhandler
+    zpath := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "dictybase", "testchado")
+    zfile := filepath.Join(zpath, "preset.zip")
+    zr, err := zip.OpenReader(zfile)
+    if err != nil {
+        return err
+    }
+    defer zr.Close()
+    for _, f := range zr.File {
+        if f.Name == "default.sql" {
+            zc, err := f.Open()
+            if err != nil {
+                return err
+            }
+            _, err = io.Copy(&c, zc)
+            if err != nil {
+                return err
+            }
+            break
+        }
+    }
+    _ = sqlx.Execf(c.String())
+    return nil
+}
