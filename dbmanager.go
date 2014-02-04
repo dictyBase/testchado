@@ -20,12 +20,25 @@ type DBManager interface {
     DeploySchema() error
     // Reloads chado schema in the database
     ResetSchema() error
+    // Return the content of chado schema for a particular backend
+    SchemaDDL() (*bytes.Buffer, error)
+    // Loads the default fixture in the chado schema. The default fixture include.
+    //  1.List of default organisms.
+    //  2.Sequnence ontology(SO)
+    //  3.Relation ontology(RO)
+    LoadFixture() error
+    // Loads a custom fixture in the test database
+    LoadCustomFixture(string) error
+    // The active database connection
+    DBHandle() *sqlx.DB
+    // Name of datasource in a format understandable by database/sql package
+    DataSource() string
 }
 
 // A type that provides few helper attributes for implementing DBManager interface
 // All backends are encouraged to embed this type in their implementation.
 type DBHelper struct {
-    Driver    string
+    driver    string
     dbsource  string
     dbhandler *sqlx.DB
 }
@@ -40,7 +53,7 @@ func (dbh *DBHelper) SchemaDDL() (*bytes.Buffer, error) {
         return &c, err
     }
     defer zr.Close()
-    name := "chado." + dbh.Driver
+    name := "chado." + dbh.Driver()
     for _, f := range zr.File {
         if f.Name == name {
             zc, err := f.Open()
@@ -99,7 +112,32 @@ func (dbh *DBHelper) DBHandle() *sqlx.DB {
     return dbh.dbhandler
 }
 
+func (dbh *DBHelper) Driver() string {
+    return dbh.driver
+}
+
 // Name of datasource in a format understandable by database/sql package
 func (dbh *DBHelper) DataSource() string {
     return dbh.dbsource
+}
+
+// Returns a new instance of DBManager.
+// By default, it gives an instance of sqlite backend.
+// If TC_DSOURCE env variable is set, returns a postgres backend.
+func NewChadoSchema() DBManager {
+    if CheckPostgresEnv() {
+        return NewPostgresManager(GetDataSource())
+    }
+    return NewSQLiteManager()
+}
+
+func CheckPostgresEnv() bool {
+    if len(os.Getenv("TC_DSOURCE")) > 0 {
+        return true
+    }
+    return false
+}
+
+func GetDataSource() string {
+    return os.Getenv("TC_DSOURCE")
 }

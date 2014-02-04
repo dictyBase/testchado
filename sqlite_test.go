@@ -11,7 +11,7 @@ func TestSQLiteManager(t *testing.T) {
     if dbm.dbsource != ":memory:" {
         t.Error("should have :memory: dbsource")
     }
-    if dbm.Driver != "sqlite3" {
+    if dbm.Driver() != "sqlite3" {
         t.Error("should have sqlite3 driver")
     }
     if dbm.dbhandler == nil {

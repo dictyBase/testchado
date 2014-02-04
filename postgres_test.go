@@ -2,21 +2,9 @@ package testchado
 
 import (
     "bytes"
-    "os"
     "regexp"
     "testing"
 )
-
-func CheckPostgresEnv() bool {
-    if len(os.Getenv("TC_DSOURCE")) > 0 {
-        return true
-    }
-    return false
-}
-
-func GetDataSource() string {
-    return os.Getenv("TC_DSOURCE")
-}
 
 func TestPostgresManager(t *testing.T) {
     if !CheckPostgresEnv() {
@@ -28,7 +16,7 @@ func TestPostgresManager(t *testing.T) {
     if dbm.dbsource != ds {
         t.Errorf("should have %s dbsource\n", ds)
     }
-    if dbm.Driver != "postgres" {
+    if dbm.Driver() != "postgres" {
         t.Error("should have postgres driver")
     }
     if dbm.dbhandler == nil {

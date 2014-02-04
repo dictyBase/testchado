@@ -17,7 +17,7 @@ func NewSQLiteManager() *Sqlite {
     if err != nil {
         log.Fatal(err)
     }
-    return &Sqlite{&DBHelper{dbsource: ":memory:", Driver: "sqlite3", dbhandler: dbh}}
+    return &Sqlite{&DBHelper{dbsource: ":memory:", driver: "sqlite3", dbhandler: dbh}}
 }
 
 func (sqlite *Sqlite) Database() string {
