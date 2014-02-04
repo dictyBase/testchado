@@ -82,7 +82,7 @@ func TestSQLiteSchemaCRUD(t *testing.T) {
     }
 }
 
-func TestLoadFixture(t *testing.T) {
+func TestSQLiteLoadFixture(t *testing.T) {
     dbm := NewSQLiteManager()
     _ = dbm.DeploySchema()
     if err := dbm.LoadFixture(); err != nil {
