@@ -11,7 +11,7 @@ import (
 
 // Generates a random string between a range(min and max) of length
 func RandomString(min, max int) string {
-    alphanum := []byte("0123456789abcdefghijklmnopqrstuvwxyz")
+    alphanum := []byte("abcdefghijklmnopqrstuvwxyz")
     rand.Seed(time.Now().UTC().UnixNano())
     size := min + rand.Intn(max-min)
     b := make([]byte, size)

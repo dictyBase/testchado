@@ -71,30 +71,30 @@ func TestPostgresSchemaCRUD(t *testing.T) {
     }
 
     sqlx := dbm.DBHandle()
-    type tbls struct{ Name string }
-    tbl := tbls{}
-    err := sqlx.Get(&tbl, "SELECT table_name name FROM information_schema.tables where table_schema = ? and table_name = ?", dbm.Schema, "feature")
-    if err != nil {
-        t.Errorf("should have executed the query %s", err)
-    }
-    if tbl.Name != "feature" {
-        t.Error("should have got feature table name")
-    }
-
     type entries struct{ Counter int }
     e := entries{}
-    err = sqlx.Get(&e, "SELECT count(table_name) counter FROM information_schema.tables where table_schema = ?", dbm.Schema)
+    err := sqlx.Get(&e, "SELECT count(table_name) counter FROM information_schema.tables WHERE table_schema = ($1)", dbm.Schema)
     if err != nil {
         t.Errorf("should have executed the query %s", err)
     }
-    if e.Counter != 174 {
-        t.Error("should have 174 tables")
+    if e.Counter != 173 {
+        t.Error("should have 173 tables")
+    }
+
+    type tbls struct{ Tname string }
+    tbl := tbls{}
+    err = sqlx.Get(&tbl, "SELECT table_name tname FROM information_schema.tables WHERE table_schema = ($1) AND table_name = ($2)", dbm.Schema, "feature")
+    if err != nil {
+        t.Errorf("should have executed the query %s", err)
+    }
+    if tbl.Tname != "feature" {
+        t.Error("should have got feature table name")
     }
 
     if err = dbm.DropSchema(); err != nil {
         t.Errorf("should have dropped the schema: %s", err)
     }
-    err = sqlx.Get(&e, "SELECT count(table_name) counter FROM information_schema.tables where table_schema = ?", dbm.Schema)
+    err = sqlx.Get(&e, "SELECT count(table_name) counter FROM information_schema.tables WHERE table_schema = ($1)", dbm.Schema)
     if err != nil {
         t.Errorf("should have executed the query %s", err)
     }
@@ -106,6 +106,7 @@ func TestPostgresSchemaCRUD(t *testing.T) {
     if err = dbm.ResetSchema(); err != nil {
         t.Errorf("should have reset the schema: %s", err)
     }
+    _ = dbm.DropSchema()
 }
 
 func TestPostgresLoadFixture(t *testing.T) {
@@ -131,9 +132,9 @@ func TestPostgresLoadFixture(t *testing.T) {
     }
 
     query := `
-     SELECT count(cvterm.cvterm_id) counter from CVTERM join CV on CV.CV_ID=CVTERM.CV_ID
-     WHERE CV.NAME = 'sequence'
-    `
+SELECT count(cvterm.cvterm_id) counter from CVTERM join CV on CV.CV_ID=CVTERM.CV_ID
+WHERE CV.NAME = 'sequence'
+`
     err = sqlx.Get(&e, query)
     if err != nil {
         t.Errorf("should have executed the query %s", err)
