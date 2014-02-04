@@ -25,11 +25,6 @@ type DBManager interface {
 // A type that provides few helper attributes for implementing DBManager interface
 // All backends are encouraged to embed this type in their implementation.
 type DBHelper struct {
-    // Database user
-    User string
-    // Database password
-    Password string
-    // Database driver
     Driver    string
     dbsource  string
     dbhandler *sqlx.DB
