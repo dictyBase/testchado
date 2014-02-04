@@ -11,7 +11,7 @@ import (
 
 // Generates a random string between a range(min and max) of length
 func RandomString(min, max int) string {
-    alphanum := []byte("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz")
+    alphanum := []byte("0123456789abcdefghijklmnopqrstuvwxyz")
     rand.Seed(time.Now().UTC().UnixNano())
     size := min + rand.Intn(max-min)
     b := make([]byte, size)
@@ -52,7 +52,7 @@ func (postgres *Postgres) DeploySchema() error {
     if err != nil {
         return err
     }
-    _, err = buff.WriteString("SET SCHEMA " + schema + ";\n")
+    _, err = buff.WriteString("SET search_path TO " + schema + ";\n")
     if err != nil {
         return err
     }
