@@ -12,14 +12,10 @@ import (
 // Interface for managing the lifecycle of a chado database. Any backend should implement
 // this interface
 type DBManager interface {
-    // The active database connection
-    DBHandle() *sqlx.DB
     // Name of the database, might vary by implementation
     Database() string
     // Removes the active chado schema from the database
     DropSchema() error
-    // Name of datasource in a format understandable by database/sql package
-    DataSource() string
     // Loads chado schema in the database
     DeploySchema() error
     // Reloads chado schema in the database
@@ -95,4 +91,20 @@ func (dbh *DBHelper) LoadFixture() error {
     }
     _ = sqlx.Execf(c.String())
     return nil
+}
+
+func (dbh *DBHelper) LoadCustomFixture(fixture string) error {
+    sqlx := dbh.dbhandler
+    _, err := sqlx.LoadFile(fixture)
+    return err
+}
+
+// The active database connection
+func (dbh *DBHelper) DBHandle() *sqlx.DB {
+    return dbh.dbhandler
+}
+
+// Name of datasource in a format understandable by database/sql package
+func (dbh *DBHelper) DataSource() string {
+    return dbh.dbsource
 }

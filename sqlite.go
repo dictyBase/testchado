@@ -20,16 +20,8 @@ func NewSQLiteManager() *Sqlite {
     return &Sqlite{&DBHelper{dbsource: ":memory:", Driver: "sqlite3", dbhandler: dbh}}
 }
 
-func (sqlite *Sqlite) DBHandle() *sqlx.DB {
-    return sqlite.DBHelper.dbhandler
-}
-
 func (sqlite *Sqlite) Database() string {
     return ""
-}
-
-func (sqlite *Sqlite) DataSource() string {
-    return sqlite.DBHelper.dbsource
 }
 
 func (sqlite *Sqlite) DropSchema() error {
