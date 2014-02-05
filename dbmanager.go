@@ -133,9 +133,12 @@ func (dbh *DBHelper) LoadPresetFixture(name string) error {
     return nil
 }
 
-func (dbh *DBHelper) LoadCustomFixture(fixture string) error {
+func (dbh *DBHelper) LoadCustomFixture(file string) error {
+    if _, err := os.Stat(file); os.IsNotExist(err) {
+        return err
+    }
     sqlx := dbh.dbhandler
-    _, err := sqlx.LoadFile(fixture)
+    _, err := sqlx.LoadFile(file)
     return err
 }
 
