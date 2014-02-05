@@ -112,3 +112,23 @@ func TestSQLiteLoadDefaultFixture(t *testing.T) {
         t.Error("should have 286 sequence ontology term")
     }
 }
+
+func TestSQLiteLoadPresetFixture(t *testing.T) {
+    dbm := NewSQLiteManager()
+    _ = dbm.DeploySchema()
+    if err := dbm.LoadPresetFixture("cvprop"); err != nil {
+        t.Errorf("should have loaded fixture: %s", err)
+    }
+
+    type entries struct{ Counter int }
+    e := entries{}
+    sqlx := dbm.DBHandle()
+    err := sqlx.Get(&e, "SELECT count(*) counter FROM cvterm")
+    if err != nil {
+        t.Errorf("should have executed the query %s", err)
+    }
+    if e.Counter != 13 {
+        t.Error("should have 13 cvterms")
+    }
+
+}

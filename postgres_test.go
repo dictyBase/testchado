@@ -130,4 +130,29 @@ WHERE CV.NAME = 'sequence'
     if e.Counter != 286 {
         t.Error("should have 286 sequence ontology term")
     }
+    _ = dbm.DropSchema()
+}
+
+func TestPostgresLoadPresetFixture(t *testing.T) {
+    if !CheckPostgresEnv() {
+        t.Skip("postgres environment variable TC_DSOURCE is not set")
+    }
+    ds := GetDataSource()
+    dbm := NewPostgresManager(ds)
+    _ = dbm.DeploySchema()
+    if err := dbm.LoadPresetFixture("cvprop"); err != nil {
+        t.Errorf("should have loaded fixture: %s", err)
+    }
+
+    type entries struct{ Counter int }
+    e := entries{}
+    sqlx := dbm.DBHandle()
+    err := sqlx.Get(&e, "SELECT count(*) counter FROM cvterm")
+    if err != nil {
+        t.Errorf("should have executed the query %s", err)
+    }
+    if e.Counter != 13 {
+        t.Error("should have 13 cvterms")
+    }
+    _ = dbm.DropSchema()
 }

@@ -31,7 +31,10 @@ type DBManager interface {
     //  2.Sequnence ontology(SO)
     //  3.Relation ontology(RO)
     LoadDefaultFixture() error
-    // Loads a custom fixture in the test database. It accepts a path to a file containing sql statements to insert fixture.
+    // Loads one of the preset fixture that comes bundled with testchado. Currently it could be one of
+    // cvprop or eco.
+    LoadPresetFixture(string) error
+    // Loads a custom fixture in the test database. It accepts file containing sql statements to insert fixture.
     // The sql statements are generally series of INSERT statements one in a single line, however any other
     // accpetable forms are allowed as long as they are compatible with the backend.
     LoadCustomFixture(string) error
@@ -88,6 +91,33 @@ func (dbh *DBHelper) LoadDefaultFixture() error {
     defer zr.Close()
     for _, f := range zr.File {
         if f.Name == "default.sql" {
+            zc, err := f.Open()
+            if err != nil {
+                return err
+            }
+            _, err = io.Copy(&c, zc)
+            if err != nil {
+                return err
+            }
+            break
+        }
+    }
+    _ = sqlx.Execf(c.String())
+    return nil
+}
+
+func (dbh *DBHelper) LoadPresetFixture(name string) error {
+    var c bytes.Buffer
+    sqlx := dbh.dbhandler
+    zpath := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "dictybase", "testchado")
+    zfile := filepath.Join(zpath, "preset.zip")
+    zr, err := zip.OpenReader(zfile)
+    if err != nil {
+        return err
+    }
+    defer zr.Close()
+    for _, f := range zr.File {
+        if f.Name == name+".sql" {
             zc, err := f.Open()
             if err != nil {
                 return err
