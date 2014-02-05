@@ -14,6 +14,10 @@ import (
 type DBManager interface {
     // Name of the database, might vary by implementation
     Database() string
+    // The active database connection
+    DBHandle() *sqlx.DB
+    // Name of datasource in a format understandable by database/sql package
+    DataSource() string
     // Removes the active chado schema from the database
     DropSchema() error
     // Loads chado schema in the database
@@ -26,13 +30,11 @@ type DBManager interface {
     //  1.List of default organisms.
     //  2.Sequnence ontology(SO)
     //  3.Relation ontology(RO)
-    LoadFixture() error
-    // Loads a custom fixture in the test database
+    LoadDefaultFixture() error
+    // Loads a custom fixture in the test database. It accepts a path to a file containing sql statements to insert fixture.
+    // The sql statements are generally series of INSERT statements one in a single line, however any other
+    // accpetable forms are allowed as long as they are compatible with the backend.
     LoadCustomFixture(string) error
-    // The active database connection
-    DBHandle() *sqlx.DB
-    // Name of datasource in a format understandable by database/sql package
-    DataSource() string
 }
 
 // A type that provides few helper attributes for implementing DBManager interface
@@ -74,7 +76,7 @@ func (dbh *DBHelper) SchemaDDL() (*bytes.Buffer, error) {
 //  1.List of default organisms.
 //  2.Sequnence ontology(SO)
 //  3.Relation ontology(RO)
-func (dbh *DBHelper) LoadFixture() error {
+func (dbh *DBHelper) LoadDefaultFixture() error {
     var c bytes.Buffer
     sqlx := dbh.dbhandler
     zpath := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "dictybase", "testchado")

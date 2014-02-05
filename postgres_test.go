@@ -97,14 +97,14 @@ func TestPostgresSchemaCRUD(t *testing.T) {
     _ = dbm.DropSchema()
 }
 
-func TestPostgresLoadFixture(t *testing.T) {
+func TestPostgresLoadDefaultFixture(t *testing.T) {
     if !CheckPostgresEnv() {
         t.Skip("postgres environment variable TC_DSOURCE is not set")
     }
     ds := GetDataSource()
     dbm := NewPostgresManager(ds)
     _ = dbm.DeploySchema()
-    if err := dbm.LoadFixture(); err != nil {
+    if err := dbm.LoadDefaultFixture(); err != nil {
         t.Errorf("should have loaded fixture: %s", err)
     }
 

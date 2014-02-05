@@ -82,10 +82,10 @@ func TestSQLiteSchemaCRUD(t *testing.T) {
     }
 }
 
-func TestSQLiteLoadFixture(t *testing.T) {
+func TestSQLiteLoadDefaultFixture(t *testing.T) {
     dbm := NewSQLiteManager()
     _ = dbm.DeploySchema()
-    if err := dbm.LoadFixture(); err != nil {
+    if err := dbm.LoadDefaultFixture(); err != nil {
         t.Errorf("should have loaded fixture: %s", err)
     }
 
