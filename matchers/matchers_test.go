@@ -13,17 +13,17 @@ func TestCommonMatcher(t *testing.T) {
     chado.LoadDefaultFixture()
     defer chado.DropSchema()
 
-    Expect(chado).Should(HasCv("sequence"))
-    Expect(chado).ShouldNot(HasCv("gene_ontology"))
+    Expect(chado).Should(HaveCv("sequence"))
+    Expect(chado).ShouldNot(HaveCv("gene_ontology"))
 
     for _, name := range []string{"gene", "match_part", "has_agent"} {
-        Expect(chado).Should(HasCvterm(name))
+        Expect(chado).Should(HaveCvterm(name))
     }
     for _, name := range []string{"perl", "golang", "python"} {
-        Expect(chado).ShouldNot(HasCvterm(name))
+        Expect(chado).ShouldNot(HaveCvterm(name))
     }
 
     for _, dbxref := range []string{"sequence:variant_of", "relationship:OBO_REL:transformed_into", "member_of"} {
-        Expect(chado).Should(HasDbxref(dbxref))
+        Expect(chado).Should(HaveDbxref(dbxref))
     }
 }
