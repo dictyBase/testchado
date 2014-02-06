@@ -57,6 +57,7 @@ func TestPostgresSchemaCRUD(t *testing.T) {
     if err := dbm.DeploySchema(); err != nil {
         t.Errorf("error %s: should have deployed the chado schema", err)
     }
+    defer dbm.DropSchema()
 
     sqlx := dbm.DBHandle()
     type entries struct{ Counter int }
@@ -94,7 +95,6 @@ func TestPostgresSchemaCRUD(t *testing.T) {
     if err = dbm.ResetSchema(); err != nil {
         t.Errorf("should have reset the schema: %s", err)
     }
-    _ = dbm.DropSchema()
 }
 
 func TestPostgresLoadDefaultFixture(t *testing.T) {
@@ -103,6 +103,7 @@ func TestPostgresLoadDefaultFixture(t *testing.T) {
     }
     ds := GetDataSource()
     dbm := NewPostgresManager(ds)
+    defer dbm.DropSchema()
     _ = dbm.DeploySchema()
     if err := dbm.LoadDefaultFixture(); err != nil {
         t.Errorf("should have loaded fixture: %s", err)
@@ -130,7 +131,6 @@ WHERE CV.NAME = 'sequence'
     if e.Counter != 286 {
         t.Error("should have 286 sequence ontology term")
     }
-    _ = dbm.DropSchema()
 }
 
 func TestPostgresLoadPresetFixture(t *testing.T) {
@@ -139,6 +139,7 @@ func TestPostgresLoadPresetFixture(t *testing.T) {
     }
     ds := GetDataSource()
     dbm := NewPostgresManager(ds)
+    defer dbm.DropSchema()
     _ = dbm.DeploySchema()
     if err := dbm.LoadPresetFixture("cvprop"); err != nil {
         t.Errorf("should have loaded fixture: %s", err)
@@ -154,5 +155,4 @@ func TestPostgresLoadPresetFixture(t *testing.T) {
     if e.Counter != 13 {
         t.Error("should have 13 cvterms")
     }
-    _ = dbm.DropSchema()
 }
