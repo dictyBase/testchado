@@ -27,3 +27,26 @@ func TestCommonMatcher(t *testing.T) {
         Expect(chado).Should(HaveDbxref(dbxref))
     }
 }
+
+func TestDatabaseMatchers(t *testing.T) {
+    RegisterTestingT(t)
+    chado := testchado.NewChadoSchema()
+    RegisterDBHandler(chado)
+    chado.DeploySchema()
+    chado.LoadDefaultFixture()
+    defer chado.DropSchema()
+
+    q := "SELECT count(*) FROM organism"
+    Expect(q).Should(HaveCount(12))
+
+    query := `
+     SELECT count(cvterm.cvterm_id) counter from CVTERM join CV on CV.CV_ID=CVTERM.CV_ID
+     WHERE CV.NAME = $1
+    `
+    m := make(map[string]interface{})
+    p := make([]interface{}, 1)
+    p[0] = "sequence"
+    m["params"] = p
+    m["count"] = 286
+    Expect(query).Should(HaveNameCount(m))
+}
