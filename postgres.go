@@ -37,7 +37,7 @@ func NewPostgresManager(datasource string) *Postgres {
         log.Fatal(err)
     }
     schema := RandomString(9, 10)
-    return &Postgres{&DBHelper{dbsource: datasource, Driver: "postgres", dbhandler: dbh}, schema}
+    return &Postgres{&DBHelper{dbsource: datasource, driver: "postgres", dbhandler: dbh}, schema}
 }
 
 func (postgres *Postgres) Database() string {

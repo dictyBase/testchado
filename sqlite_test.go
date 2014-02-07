@@ -11,7 +11,7 @@ func TestSQLiteManager(t *testing.T) {
     if dbm.dbsource != ":memory:" {
         t.Error("should have :memory: dbsource")
     }
-    if dbm.Driver != "sqlite3" {
+    if dbm.Driver() != "sqlite3" {
         t.Error("should have sqlite3 driver")
     }
     if dbm.dbhandler == nil {
@@ -82,10 +82,10 @@ func TestSQLiteSchemaCRUD(t *testing.T) {
     }
 }
 
-func TestSQLiteLoadFixture(t *testing.T) {
+func TestSQLiteLoadDefaultFixture(t *testing.T) {
     dbm := NewSQLiteManager()
     _ = dbm.DeploySchema()
-    if err := dbm.LoadFixture(); err != nil {
+    if err := dbm.LoadDefaultFixture(); err != nil {
         t.Errorf("should have loaded fixture: %s", err)
     }
 
@@ -111,4 +111,24 @@ func TestSQLiteLoadFixture(t *testing.T) {
     if e.Counter != 286 {
         t.Error("should have 286 sequence ontology term")
     }
+}
+
+func TestSQLiteLoadPresetFixture(t *testing.T) {
+    dbm := NewSQLiteManager()
+    _ = dbm.DeploySchema()
+    if err := dbm.LoadPresetFixture("cvprop"); err != nil {
+        t.Errorf("should have loaded fixture: %s", err)
+    }
+
+    type entries struct{ Counter int }
+    e := entries{}
+    sqlx := dbm.DBHandle()
+    err := sqlx.Get(&e, "SELECT count(*) counter FROM cvterm")
+    if err != nil {
+        t.Errorf("should have executed the query %s", err)
+    }
+    if e.Counter != 13 {
+        t.Error("should have 13 cvterms")
+    }
+
 }

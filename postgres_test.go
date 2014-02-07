@@ -2,21 +2,9 @@ package testchado
 
 import (
     "bytes"
-    "os"
     "regexp"
     "testing"
 )
-
-func CheckPostgresEnv() bool {
-    if len(os.Getenv("TC_DSOURCE")) > 0 {
-        return true
-    }
-    return false
-}
-
-func GetDataSource() string {
-    return os.Getenv("TC_DSOURCE")
-}
 
 func TestPostgresManager(t *testing.T) {
     if !CheckPostgresEnv() {
@@ -28,7 +16,7 @@ func TestPostgresManager(t *testing.T) {
     if dbm.dbsource != ds {
         t.Errorf("should have %s dbsource\n", ds)
     }
-    if dbm.Driver != "postgres" {
+    if dbm.Driver() != "postgres" {
         t.Error("should have postgres driver")
     }
     if dbm.dbhandler == nil {
@@ -69,6 +57,7 @@ func TestPostgresSchemaCRUD(t *testing.T) {
     if err := dbm.DeploySchema(); err != nil {
         t.Errorf("error %s: should have deployed the chado schema", err)
     }
+    defer dbm.DropSchema()
 
     sqlx := dbm.DBHandle()
     type entries struct{ Counter int }
@@ -106,17 +95,17 @@ func TestPostgresSchemaCRUD(t *testing.T) {
     if err = dbm.ResetSchema(); err != nil {
         t.Errorf("should have reset the schema: %s", err)
     }
-    _ = dbm.DropSchema()
 }
 
-func TestPostgresLoadFixture(t *testing.T) {
+func TestPostgresLoadDefaultFixture(t *testing.T) {
     if !CheckPostgresEnv() {
         t.Skip("postgres environment variable TC_DSOURCE is not set")
     }
     ds := GetDataSource()
     dbm := NewPostgresManager(ds)
+    defer dbm.DropSchema()
     _ = dbm.DeploySchema()
-    if err := dbm.LoadFixture(); err != nil {
+    if err := dbm.LoadDefaultFixture(); err != nil {
         t.Errorf("should have loaded fixture: %s", err)
     }
 
@@ -141,5 +130,29 @@ WHERE CV.NAME = 'sequence'
     }
     if e.Counter != 286 {
         t.Error("should have 286 sequence ontology term")
+    }
+}
+
+func TestPostgresLoadPresetFixture(t *testing.T) {
+    if !CheckPostgresEnv() {
+        t.Skip("postgres environment variable TC_DSOURCE is not set")
+    }
+    ds := GetDataSource()
+    dbm := NewPostgresManager(ds)
+    defer dbm.DropSchema()
+    _ = dbm.DeploySchema()
+    if err := dbm.LoadPresetFixture("cvprop"); err != nil {
+        t.Errorf("should have loaded fixture: %s", err)
+    }
+
+    type entries struct{ Counter int }
+    e := entries{}
+    sqlx := dbm.DBHandle()
+    err := sqlx.Get(&e, "SELECT count(*) counter FROM cvterm")
+    if err != nil {
+        t.Errorf("should have executed the query %s", err)
+    }
+    if e.Counter != 13 {
+        t.Error("should have 13 cvterms")
     }
 }
