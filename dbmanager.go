@@ -159,7 +159,7 @@ func (dbh *DBHelper) DataSource() string {
 // Returns a new instance of DBManager.
 // By default, it gives an instance of sqlite backend.
 // If TC_DSOURCE env variable is set, returns a postgres backend.
-func NewChadoSchema() DBManager {
+func NewDBManager() DBManager {
     if CheckPostgresEnv() {
         return NewPostgresManager(GetDataSource())
     }

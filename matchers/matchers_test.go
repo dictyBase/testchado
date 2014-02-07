@@ -8,7 +8,7 @@ import (
 
 func TestCommonMatcher(t *testing.T) {
     RegisterTestingT(t)
-    chado := testchado.NewChadoSchema()
+    chado := testchado.NewDBManager()
     chado.DeploySchema()
     chado.LoadDefaultFixture()
     defer chado.DropSchema()
@@ -30,7 +30,7 @@ func TestCommonMatcher(t *testing.T) {
 
 func TestDatabaseMatchers(t *testing.T) {
     RegisterTestingT(t)
-    chado := testchado.NewChadoSchema()
+    chado := testchado.NewDBManager()
     RegisterDBHandler(chado)
     chado.DeploySchema()
     chado.LoadDefaultFixture()
