@@ -13,6 +13,7 @@ func RegisterDBHandler(dbm testchado.DBManager) {
 }
 
 //HaveRows matches the number of rows returned from arbitary SQL query in chado database
+//  Expect("SELECT * FROM feature").Should(HaveRows(20))
 func HaveRows(expected interface{}) gomega.OmegaMatcher {
     return &HaveRowsMatcher{expected: expected}
 }
@@ -47,6 +48,8 @@ func (matcher *HaveRowsMatcher) Match(actual interface{}) (success bool, message
 }
 
 //HaveCount is a variant of HaveRows where it matches the value of COUNT(*) or COUNT(column_name) SQL query in chado database
+//      Expect("SELECT count(*) FROM dbxref").Should(HaveCount(23))
+//      Expect("SELECT count(pub_id) FROM pub").Should(HaveCount(34))
 func HaveCount(expected interface{}) gomega.OmegaMatcher {
     return &HaveCountMatcher{expected: expected}
 }
@@ -79,6 +82,24 @@ func (matcher *HaveCountMatcher) Match(actual interface{}) (success bool, messag
 }
 
 //HaveNameCount is a variant of HaveNameCount with bind variables to run arbitary COUNT sql queries in chado database
+/*The bind variables and expected count are passed through a map structure
+  params : An interface slice containing bind values in order
+  count  : The expected count from SQL statement
+
+      query := `
+          SELECT count(*) FROM feature JOIN organism ON
+              feature.organism_id = organism.organism_id
+              WHERE feature.is_obsolete = $1
+              AND
+              organism.genus = $2
+              AND
+              organism.species = $3
+          `
+      m := make(map[string]interface{})
+      m["param"] = append(make([]interface, 0), 1, "Homo", "sapiens")
+      m["count"] = 50
+      Expect(query).Should(HaveNameCount(m))
+*/
 func HaveNameCount(expected interface{}) gomega.OmegaMatcher {
     return &HaveNameCountMatcher{expected: expected}
 }

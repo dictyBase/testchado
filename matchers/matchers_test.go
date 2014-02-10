@@ -8,7 +8,7 @@ import (
 
 func TestCommonMatcher(t *testing.T) {
     RegisterTestingT(t)
-    chado := testchado.NewChadoSchema()
+    chado := testchado.NewDBManager()
     chado.DeploySchema()
     chado.LoadDefaultFixture()
     defer chado.DropSchema()
@@ -30,7 +30,7 @@ func TestCommonMatcher(t *testing.T) {
 
 func TestDatabaseMatchers(t *testing.T) {
     RegisterTestingT(t)
-    chado := testchado.NewChadoSchema()
+    chado := testchado.NewDBManager()
     RegisterDBHandler(chado)
     chado.DeploySchema()
     chado.LoadDefaultFixture()
@@ -44,9 +44,7 @@ func TestDatabaseMatchers(t *testing.T) {
      WHERE CV.NAME = $1
     `
     m := make(map[string]interface{})
-    p := make([]interface{}, 1)
-    p[0] = "sequence"
-    m["params"] = p
+    m["params"] = append(make([]interface{}, 0), "sequence")
     m["count"] = 286
     Expect(query).Should(HaveNameCount(m))
 }
