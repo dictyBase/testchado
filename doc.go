@@ -70,8 +70,8 @@ number of rows from adhoc SQL statements with bind parameters.
         //setup
         chado := NewDBManager()
         RegisterDBHandler(chado)
-        chado.LoadDefaultFixtures()
         chado.DeploySchema()
+        chado.LoadDefaultFixtures()
         //teardown
         defer chado.DropSchema()
 

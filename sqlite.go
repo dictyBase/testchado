@@ -41,6 +41,7 @@ func (sqlite *Sqlite) DropSchema() error {
     if err != nil {
         return err
     }
+    sqlite.DBHelper.hasLoadedSchema = false
     return nil
 }
 
@@ -51,6 +52,7 @@ func (sqlite *Sqlite) DeploySchema() error {
         return err
     }
     _ = dbh.Execf(content.String())
+    sqlite.DBHelper.hasLoadedSchema = true
     return nil
 }
 
@@ -63,5 +65,6 @@ func (sqlite *Sqlite) ResetSchema() error {
     if err != nil {
         return err
     }
+    sqlite.DBHelper.hasLoadedSchema = true
     return nil
 }
