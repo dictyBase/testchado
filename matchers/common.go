@@ -176,7 +176,7 @@ func (matcher *HaveOrganismMatcher) Match(actual interface{}) (success bool, mes
     if err != nil {
         return false, "", fmt.Errorf("could not execute query: %s", err)
     }
-    if e.Counter > 1 {
+    if e.Counter > 0 {
         return true, fmt.Sprintf("Expected\n\torganism %#v does not exist in database", matcher.expected), nil
     }
     return false, fmt.Sprintf("Expected\n\torganism %#v exist in database", matcher.expected), nil
