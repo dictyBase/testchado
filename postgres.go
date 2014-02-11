@@ -74,6 +74,7 @@ func (postgres *Postgres) DeploySchema() error {
     if err != nil {
         return err
     }
+    postgres.DBHelper.hasLoadedSchema = true
     return nil
 }
 
@@ -88,6 +89,7 @@ func (postgres *Postgres) DropSchema() error {
         return err
     }
     postgres.Schema = RandomString(9, 10)
+    postgres.DBHelper.hasLoadedSchema = false
     return nil
 }
 
@@ -100,5 +102,6 @@ func (postgres *Postgres) ResetSchema() error {
     if err != nil {
         return err
     }
+    postgres.DBHelper.hasLoadedSchema = true
     return nil
 }

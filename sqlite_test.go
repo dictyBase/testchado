@@ -44,6 +44,10 @@ func TestSQLiteSchemaCRUD(t *testing.T) {
         t.Errorf("error %s: should have deployed the chado schema", err)
     }
 
+    if !dbm.hasLoadedSchema {
+        t.Error("should have been set after schema deployment")
+    }
+
     sqlx := dbm.DBHandle()
     type tbls struct{ Name string }
     tbl := tbls{}
@@ -68,6 +72,9 @@ func TestSQLiteSchemaCRUD(t *testing.T) {
     if err = dbm.DropSchema(); err != nil {
         t.Errorf("should have dropped the schema: %s", err)
     }
+    if dbm.hasLoadedSchema {
+        t.Error("should not have been set after schema deployment")
+    }
     err = sqlx.Get(&e, "SELECT count(name) counter FROM sqlite_master where type = ?", "table")
     if err != nil {
         t.Errorf("should have executed the query %s", err)
@@ -80,10 +87,16 @@ func TestSQLiteSchemaCRUD(t *testing.T) {
     if err = dbm.ResetSchema(); err != nil {
         t.Errorf("should have reset the schema: %s", err)
     }
+    if !dbm.hasLoadedSchema {
+        t.Error("should have been set after schema re-deployment")
+    }
 }
 
 func TestSQLiteLoadDefaultFixture(t *testing.T) {
     dbm := NewSQLiteManager()
+    if err := dbm.LoadDefaultFixture(); err == nil {
+        t.Error("should have not loaded default fixture")
+    }
     _ = dbm.DeploySchema()
     if err := dbm.LoadDefaultFixture(); err != nil {
         t.Errorf("should have loaded fixture: %s", err)
@@ -115,6 +128,9 @@ func TestSQLiteLoadDefaultFixture(t *testing.T) {
 
 func TestSQLiteLoadPresetFixture(t *testing.T) {
     dbm := NewSQLiteManager()
+    if err := dbm.LoadPresetFixture("cvprop"); err == nil {
+        t.Error("should have not loaded preset fixture")
+    }
     _ = dbm.DeploySchema()
     if err := dbm.LoadPresetFixture("cvprop"); err != nil {
         t.Errorf("should have loaded fixture: %s", err)

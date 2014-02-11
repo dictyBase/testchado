@@ -3,6 +3,7 @@ package testchado
 import (
     "archive/zip"
     "bytes"
+    "fmt"
     "github.com/jmoiron/sqlx"
     "io"
     "os"
@@ -43,9 +44,10 @@ type DBManager interface {
 // A type that provides few helper attributes for implementing DBManager interface
 // All backends are encouraged to embed this type in their implementation.
 type DBHelper struct {
-    driver    string
-    dbsource  string
-    dbhandler *sqlx.DB
+    driver          string
+    dbsource        string
+    dbhandler       *sqlx.DB
+    hasLoadedSchema bool
 }
 
 // Return the content of chado schema for a particular backend
@@ -80,6 +82,9 @@ func (dbh *DBHelper) SchemaDDL() (*bytes.Buffer, error) {
 //  2.Sequnence ontology(SO)
 //  3.Relation ontology(RO)
 func (dbh *DBHelper) LoadDefaultFixture() error {
+    if !dbh.hasLoadedSchema {
+        return fmt.Errorf("chado schema is not loaded")
+    }
     var c bytes.Buffer
     sqlx := dbh.dbhandler
     zpath := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "dictybase", "testchado")
@@ -107,6 +112,9 @@ func (dbh *DBHelper) LoadDefaultFixture() error {
 }
 
 func (dbh *DBHelper) LoadPresetFixture(name string) error {
+    if !dbh.hasLoadedSchema {
+        return fmt.Errorf("chado schema is not loaded")
+    }
     var c bytes.Buffer
     sqlx := dbh.dbhandler
     zpath := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "dictybase", "testchado")
@@ -134,6 +142,10 @@ func (dbh *DBHelper) LoadPresetFixture(name string) error {
 }
 
 func (dbh *DBHelper) LoadCustomFixture(file string) error {
+    if !dbh.hasLoadedSchema {
+        return fmt.Errorf("chado schema is not loaded")
+    }
+
     if _, err := os.Stat(file); os.IsNotExist(err) {
         return err
     }

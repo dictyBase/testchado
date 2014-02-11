@@ -57,6 +57,9 @@ func TestPostgresSchemaCRUD(t *testing.T) {
     if err := dbm.DeploySchema(); err != nil {
         t.Errorf("error %s: should have deployed the chado schema", err)
     }
+    if !dbm.hasLoadedSchema {
+        t.Error("should have been set after schema deployment")
+    }
     defer dbm.DropSchema()
 
     sqlx := dbm.DBHandle()
@@ -95,6 +98,9 @@ func TestPostgresSchemaCRUD(t *testing.T) {
     if err = dbm.ResetSchema(); err != nil {
         t.Errorf("should have reset the schema: %s", err)
     }
+    if !dbm.hasLoadedSchema {
+        t.Error("should have been set after schema re-deployment")
+    }
 }
 
 func TestPostgresLoadDefaultFixture(t *testing.T) {
@@ -103,6 +109,9 @@ func TestPostgresLoadDefaultFixture(t *testing.T) {
     }
     ds := GetDataSource()
     dbm := NewPostgresManager(ds)
+    if err := dbm.LoadDefaultFixture(); err == nil {
+        t.Error("should have not loaded default fixture")
+    }
     defer dbm.DropSchema()
     _ = dbm.DeploySchema()
     if err := dbm.LoadDefaultFixture(); err != nil {
@@ -139,6 +148,9 @@ func TestPostgresLoadPresetFixture(t *testing.T) {
     }
     ds := GetDataSource()
     dbm := NewPostgresManager(ds)
+    if err := dbm.LoadPresetFixture("cvprop"); err == nil {
+        t.Error("should have not loaded preset fixture")
+    }
     defer dbm.DropSchema()
     _ = dbm.DeploySchema()
     if err := dbm.LoadPresetFixture("cvprop"); err != nil {
