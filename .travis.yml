@@ -6,6 +6,7 @@ install:
     - go get github.com/kr/godep
     - godep get
     - go get github.com/dictybase/testchado
+    - go get github.com/onsi/gomega
 branches:
     only:
       - develop
