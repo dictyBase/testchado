@@ -2,6 +2,7 @@ package testchado
 
 import (
     "bytes"
+    "github.com/dictybase/gorm"
     "github.com/jmoiron/sqlx"
     _ "github.com/lib/pq"
     "log"
@@ -32,12 +33,13 @@ type Postgres struct {
 // Get an instance of postgres DBManager.
 // For details about datasource look here http://godoc.org/github.com/lib/pq
 func NewPostgresManager(datasource string) *Postgres {
-    dbh, err := sqlx.Open("postgres", datasource)
+    gm, err := gorm.Open("postgres", datasource)
     if err != nil {
         log.Fatal(err)
     }
+    sqlx := sqlx.NewDb(gm.DB(), "postgres")
     schema := RandomString(9, 10)
-    return &Postgres{&DBHelper{dbsource: datasource, driver: "postgres", dbhandler: dbh}, schema}
+    return &Postgres{&DBHelper{dbsource: datasource, driver: "postgres", dbhandler: sqlx, gormHandler: &gm}, schema}
 }
 
 func (postgres *Postgres) Database() string {
