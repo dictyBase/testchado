@@ -4,6 +4,7 @@ import (
     "archive/zip"
     "bytes"
     "fmt"
+    "github.com/dictybase/gorm"
     "github.com/jmoiron/sqlx"
     "io"
     "os"
@@ -48,6 +49,7 @@ type DBHelper struct {
     dbsource        string
     dbhandler       *sqlx.DB
     hasLoadedSchema bool
+    gormHandler     *gorm.DB
 }
 
 // Return the content of chado schema for a particular backend
@@ -157,6 +159,11 @@ func (dbh *DBHelper) LoadCustomFixture(file string) error {
 // The active database connection
 func (dbh *DBHelper) DBHandle() *sqlx.DB {
     return dbh.dbhandler
+}
+
+// An instance of gorm(https://github.com/jinzhu/gorm) ORM
+func (db *DBHelper) GormHandle() *gorm.DB {
+    return db.gormHandler
 }
 
 func (dbh *DBHelper) Driver() string {
