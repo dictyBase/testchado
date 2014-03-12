@@ -2,6 +2,7 @@ package testchado
 
 import (
     _ "github.com/cybersiddhu/go-sqlite3"
+    "github.com/dictybase/gorm"
     "github.com/jmoiron/sqlx"
     "log"
 )
@@ -13,11 +14,12 @@ type Sqlite struct {
 
 // Get a in memory instance of sqlite DBManager
 func NewSQLiteManager() *Sqlite {
-    dbh, err := sqlx.Open("sqlite3", ":memory:")
+    gm, err := gorm.Open("sqlite3", ":memory:")
     if err != nil {
         log.Fatal(err)
     }
-    return &Sqlite{&DBHelper{dbsource: ":memory:", driver: "sqlite3", dbhandler: dbh}}
+    sqlx := sqlx.NewDb(gm.DB(), "sqlite3")
+    return &Sqlite{&DBHelper{dbsource: ":memory:", driver: "sqlite3", dbhandler: sqlx, gormHandler: &gm}}
 }
 
 func (sqlite *Sqlite) Database() string {
