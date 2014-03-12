@@ -1,7 +1,9 @@
 language: go
+    - 1.2
 install:
     - go get github.com/kr/godep
     - godep get
 branches:
     only:
       - develop
+before_install: sudo apt-get install mercurial
