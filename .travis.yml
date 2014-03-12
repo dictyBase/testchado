@@ -9,5 +9,5 @@ branches:
     only:
       - develop
 script:
-      - godep go test ./...
+      - go test ./...
 before_install: sudo apt-get install mercurial
