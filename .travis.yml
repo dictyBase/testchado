@@ -1,9 +1,13 @@
 language: go
+go:
     - 1.2
 install:
+    - export PATH=$PATH:$HOME/gopath/bin
     - go get github.com/kr/godep
     - godep get
 branches:
     only:
       - develop
+script:
+      - godep go test ./...
 before_install: sudo apt-get install mercurial
