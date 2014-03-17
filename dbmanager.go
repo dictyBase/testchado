@@ -18,6 +18,8 @@ type DBManager interface {
     Database() string
     // The active database connection
     DBHandle() *sqlx.DB
+    // An instance of gorm(https://github.com/jinzhu/gorm) ORM
+    GormHandle() *gorm.DB
     // Name of datasource in a format understandable by database/sql package
     DataSource() string
     // Removes the active chado schema from the database
