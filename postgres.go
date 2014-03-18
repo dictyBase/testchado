@@ -37,6 +37,7 @@ func NewPostgresManager(datasource string) *Postgres {
     if err != nil {
         log.Fatal(err)
     }
+    gm.SingularTable(true)
     sqlx := sqlx.NewDb(gm.DB(), "postgres")
     schema := RandomString(9, 10)
     return &Postgres{&DBHelper{dbsource: datasource, driver: "postgres", dbhandler: sqlx, gormHandler: &gm}, schema}

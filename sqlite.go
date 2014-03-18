@@ -18,6 +18,7 @@ func NewSQLiteManager() *Sqlite {
     if err != nil {
         log.Fatal(err)
     }
+    gm.SingularTable(true)
     sqlx := sqlx.NewDb(gm.DB(), "sqlite3")
     return &Sqlite{&DBHelper{dbsource: ":memory:", driver: "sqlite3", dbhandler: sqlx, gormHandler: &gm}}
 }
