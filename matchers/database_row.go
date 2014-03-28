@@ -96,7 +96,7 @@ func (matcher *HaveCountMatcher) Match(actual interface{}) (success bool, messag
               organism.species = $3
           `
       m := make(map[string]interface{})
-      m["param"] = append(make([]interface, 0), 1, "Homo", "sapiens")
+      m["params"] = append(make([]interface, 0), 1, "Homo", "sapiens")
       m["count"] = 50
       Expect(query).Should(HaveNameCount(m))
 */
