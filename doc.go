@@ -23,7 +23,7 @@ Quick Start
         RegisterTestingT(t)
 
         //setup
-        chado := NewDBManager()
+        chado := testchado.NewDBManager()
         chado.LoadDefaultFixtures()
         chado.DeploySchema()
         //teardown
@@ -59,6 +59,7 @@ number of rows from adhoc SQL statements with bind parameters.
 
     import (
         "github.com/dictybase/testchado"
+      .  "github.com/dictybase/testchado/matchers"
         "testing"
       . "github.com/onsi/gomega"
     )
