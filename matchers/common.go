@@ -8,6 +8,8 @@ import (
 	"github.com/onsi/gomega"
 )
 
+type entries struct{ Counter int }
+
 //HaveCv matches a cv namespace in chado database
 func HaveCv(expected interface{}) gomega.OmegaMatcher {
 	return &HaveCvMatcher{expected: expected}
@@ -27,7 +29,7 @@ func (matcher *HaveCvMatcher) Match(actual interface{}) (success bool, err error
 		return false, fmt.Errorf("HaveCv matcher expects a cv name")
 	}
 
-	type entries struct{ Counter int }
+	//type entries struct{ Counter int }
 	e := entries{}
 	sqlx := dbm.DBHandle()
 	err = sqlx.Get(&e, "SELECT count(cv_id) counter FROM cv where name = $1", cv)
@@ -67,7 +69,7 @@ func (matcher *HaveCvtermMatcher) Match(actual interface{}) (success bool, err e
 		return false, fmt.Errorf("HaveCvterm matcher expects a cvterm")
 	}
 
-	type entries struct{ Counter int }
+	//type entries struct{ Counter int }
 	e := entries{}
 	sqlx := dbm.DBHandle()
 	err = sqlx.Get(&e, "SELECT count(cvterm_id) counter FROM cvterm where name = $1", cvterm)
@@ -108,7 +110,7 @@ func (matcher *HaveDbxrefMatcher) Match(actual interface{}) (success bool, err e
 		return false, fmt.Errorf("HaveDbxref matcher expects a dbxref")
 	}
 
-	type entries struct{ Counter int }
+	//type entries struct{ Counter int }
 	e := entries{}
 	sqlx := dbm.DBHandle()
 	if strings.Contains(dbxref, ":") {
@@ -162,7 +164,7 @@ func (matcher *HaveFeatureMatcher) Match(actual interface{}) (success bool, err 
 		return false, fmt.Errorf("HaveFeature matcher expects a feature")
 	}
 
-	type entries struct{ Counter int }
+	//type entries struct{ Counter int }
 	e := entries{}
 	sqlx := dbm.DBHandle()
 	err = sqlx.Get(&e, "SELECT count(feature_id) counter FROM feature where uniquename = $1", feature)
@@ -202,7 +204,7 @@ func (matcher *HaveOrganismMatcher) Match(actual interface{}) (success bool, err
 		return false, fmt.Errorf("HaveOrganism matcher expects a organism")
 	}
 
-	type entries struct{ Counter int }
+	//type entries struct{ Counter int }
 	e := entries{}
 	sqlx := dbm.DBHandle()
 	err = sqlx.Get(&e, "SELECT count(organism_id) counter FROM organism where common_name = $1", organism)
