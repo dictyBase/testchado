@@ -3,9 +3,9 @@ package testchado
 import (
 	"log"
 
-	_ "github.com/cybersiddhu/go-sqlite3"
 	"github.com/jinzhu/gorm"
 	"github.com/jmoiron/sqlx"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 // A type specific for sqlite backend
