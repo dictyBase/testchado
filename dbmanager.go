@@ -5,8 +5,10 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"path/filepath"
+	"runtime"
 
 	"github.com/jinzhu/gorm"
 	"github.com/jmoiron/sqlx"
@@ -55,11 +57,18 @@ type DBHelper struct {
 	gormHandler     *gorm.DB
 }
 
+func currSrcDir() string {
+	_, filename, _, ok := runtime.Caller(1)
+	if !ok {
+		log.Fatal("unable to retreive current src file path")
+	}
+	return filepath.Dir(filename)
+}
+
 // Return the content of chado schema for a particular backend
 func (dbh *DBHelper) SchemaDDL() (*bytes.Buffer, error) {
 	var c bytes.Buffer
-	zpath := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "dictybase", "testchado")
-	zfile := filepath.Join(zpath, "chado.zip")
+	zfile := filepath.Join(currSrcDir(), "chado.zip")
 	zr, err := zip.OpenReader(zfile)
 	if err != nil {
 		return &c, err
@@ -92,8 +101,7 @@ func (dbh *DBHelper) LoadDefaultFixture() error {
 	}
 	var c bytes.Buffer
 	sqlx := dbh.dbhandler
-	zpath := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "dictybase", "testchado")
-	zfile := filepath.Join(zpath, "preset.zip")
+	zfile := filepath.Join(currSrcDir(), "preset.zip")
 	zr, err := zip.OpenReader(zfile)
 	if err != nil {
 		return err
@@ -122,8 +130,7 @@ func (dbh *DBHelper) LoadPresetFixture(name string) error {
 	}
 	var c bytes.Buffer
 	sqlx := dbh.dbhandler
-	zpath := filepath.Join(os.Getenv("GOPATH"), "src", "github.com", "dictybase", "testchado")
-	zfile := filepath.Join(zpath, "preset.zip")
+	zfile := filepath.Join(currSrcDir(), "preset.zip")
 	zr, err := zip.OpenReader(zfile)
 	if err != nil {
 		return err

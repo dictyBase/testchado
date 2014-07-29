@@ -1,0 +1,30 @@
+{
+	"ImportPath": "github.com/dictybase/testchado",
+	"GoVersion": "go1.3",
+	"Packages": [
+		"./..."
+	],
+	"Deps": [
+		{
+			"ImportPath": "github.com/jinzhu/gorm",
+			"Rev": "6a00344355577859ce7f7b533dc62526992dfeeb"
+		},
+		{
+			"ImportPath": "github.com/jmoiron/sqlx",
+			"Comment": "sqlx-v1.0-31-g3e4894d",
+			"Rev": "3e4894db4b61f775c3886e377b5820c484e577ab"
+		},
+		{
+			"ImportPath": "github.com/lib/pq",
+			"Rev": "3e0659e626f761e9af7a8bd1c8b6aaea6770495b"
+		},
+		{
+			"ImportPath": "github.com/mattn/go-sqlite3",
+			"Rev": "9ac94b6fbfda6f25be5e3c17073aeed6de10428a"
+		},
+		{
+			"ImportPath": "github.com/onsi/gomega",
+			"Rev": "4699d5a664396173c7d9fcef9e88be297c7bae13"
+		}
+	]
+}

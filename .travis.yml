@@ -1,15 +1,13 @@
 language: go
 go:
-    - 1.2
+    - 1.3
 install:
     - export PATH=$PATH:$HOME/gopath/bin
     - go get github.com/kr/godep
-    - godep get
-    - go get github.com/dictybase/testchado
-    - go get github.com/onsi/gomega
+    - godep get ./...
 branches:
     only:
       - develop
 script:
-      - go test ./...
+      - godep go test ./...
 before_install: sudo apt-get install mercurial
