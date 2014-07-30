@@ -11,6 +11,9 @@ import (
 type entries struct{ Counter int }
 
 //HaveCv matches a cv namespace in chado database
+//	chado := testchado.NewDBManager()
+//  Expect(chado).Should(HaveCv("sequence"))
+//  Expect(chado).ShouldNot(HaveCv("gene_ontology"))
 func HaveCv(expected interface{}) gomega.OmegaMatcher {
 	return &HaveCvMatcher{expected: expected}
 }
@@ -51,6 +54,8 @@ func (matcher *HaveCvMatcher) NegatedFailureMessage(actual interface{}) string {
 }
 
 //HaveCvterm matches cvterm in chado database.
+//	chado := testchado.NewDBManager()
+//	Expect(chado).Should(HaveCvterm("match_part"))
 func HaveCvterm(expected interface{}) gomega.OmegaMatcher {
 	return &HaveCvtermMatcher{expected: expected}
 }
@@ -92,6 +97,9 @@ func (matcher *HaveCvtermMatcher) NegatedFailureMessage(actual interface{}) stri
 
 // HaveDbxref matches xref in chado database. In case of xref in standard format(DB:Id),
 // it splits and check for both id and db name.
+//	chado := testchado.NewDBManager()
+//	Expect(chado).Should(HaveDbxref("sequence:variant_of"))
+//	Expect(chado).Should(HaveDbxref("member_of"))
 func HaveDbxref(expected interface{}) gomega.OmegaMatcher {
 	return &HaveDbxrefMatcher{expected: expected}
 }
@@ -146,6 +154,8 @@ func (matcher *HaveDbxrefMatcher) NegatedFailureMessage(actual interface{}) stri
 }
 
 // HaveFeature matches uniquename of a feature in chado database.
+//	chado := testchado.NewDBManager()
+//	Expect(chado).Should(HaveFeature("sadA"))
 func HaveFeature(expected interface{}) gomega.OmegaMatcher {
 	return &HaveFeatureMatcher{expected: expected}
 }
@@ -186,6 +196,8 @@ func (matcher *HaveFeatureMatcher) NegatedFailureMessage(actual interface{}) str
 }
 
 // HaveOrganism matches common name(common_name column) of an organism in chado database.
+//	chado := testchado.NewDBManager()
+//	Expect(chado).Should(HaveOrganism("mouse"))
 func HaveOrganism(expected interface{}) gomega.OmegaMatcher {
 	return &HaveOrganismMatcher{expected: expected}
 }
