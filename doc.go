@@ -6,7 +6,8 @@ data. Package testchado provides a resuable API to write test cases for
 softwares that uses chado database schema for storage. It supports two
 RDBMS backends, postgresql and sqlite and uses custom chado matchers
 based on gomega (http://onsi.github.io/gomega/#adding_your_own_matchers)
-package.
+package. Go here (http://godoc.org/gopkg.in/dictybase/testchado.v1/matchers) for documentation
+on custom matchers.
 
 Quick Start
 
@@ -108,6 +109,11 @@ handling fixtures ..
         most cases
         LoadPresetFixture("cvprop") // Either of cvprop or eco
         LoadCustomFixture("path") // A file containing SQL statements
+
+Custom matchers
+
+Go here (http://godoc.org/gopkg.in/dictybase/testchado.v1/matchers) for documentation
+on custom matchers.
 
 
 */
